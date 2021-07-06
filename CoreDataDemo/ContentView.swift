@@ -12,16 +12,15 @@ struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
     
     @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
+        sortDescriptors: [NSSortDescriptor(keyPath: \Item.title, ascending: true)],
         animation: .default)
     private var items: FetchedResults<Item>
-    @State private var showingAlert = false
     
     var body: some View {
         NavigationView {
             List {
                 ForEach(items) { item in
-                    Text("Item at \(item.timestamp!, formatter: itemFormatter)")
+                    Text(item.title!)
                 }
                 .onDelete(perform: deleteItems)
             }
@@ -34,23 +33,35 @@ struct ContentView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
-                        showingAlert = true
+                        showAlert()
                     }, label: {
                         Text("Add")
                         Image(systemName: "plus")
                     })
-                    .alert(isPresented: $showingAlert) {
-                        Alert(title: Text("Add new task"), message: Text("Are you sure?"), primaryButton: .destructive(Text("Ok"), action: addItem), secondaryButton: .cancel())
-                    }
                 }
             }
         }
     }
     
-    private func addItem() {
+    private func showAlert() {
+        let alert = UIAlertController(title: "Bla-bla", message: "Add new bla-bla", preferredStyle: .alert)
+        
+        let saveAction = UIAlertAction(title: "Save", style: .default) { _ in
+            guard let text = alert.textFields?.first?.text, !text.isEmpty else { return }
+            self.addItem(text: text)
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .destructive)
+        
+        alert.addTextField()
+        alert.addAction(saveAction)
+        alert.addAction(cancelAction)
+    }
+    
+    private func addItem(text: String) {
         withAnimation {
             let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
+            newItem.title = text
             
             do {
                 try viewContext.save()
