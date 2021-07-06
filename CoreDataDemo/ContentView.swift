@@ -15,6 +15,7 @@ struct ContentView: View {
         sortDescriptors: [NSSortDescriptor(keyPath: \Item.title, ascending: true)],
         animation: .default)
     private var items: FetchedResults<Item>
+    @State private var showingAlert = false
     
     var body: some View {
         NavigationView {
@@ -38,6 +39,7 @@ struct ContentView: View {
                         Text("Add")
                         Image(systemName: "plus")
                     })
+                    
                 }
             }
         }
@@ -56,7 +58,9 @@ struct ContentView: View {
         alert.addTextField()
         alert.addAction(saveAction)
         alert.addAction(cancelAction)
-    }
+        
+        UIApplication.shared.windows.first?.rootViewController?.present(alert, animated: true)
+        }
     
     private func addItem(text: String) {
         withAnimation {
