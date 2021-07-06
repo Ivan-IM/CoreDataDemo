@@ -36,12 +36,12 @@ struct ContentView: View {
                     Button(action: {
                         showAlert()
                     }, label: {
-                        Text("Add")
                         Image(systemName: "plus")
                     })
                     
                 }
             }
+            .navigationTitle("Bla-bla list")
         }
     }
     
